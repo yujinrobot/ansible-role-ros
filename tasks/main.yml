@@ -1,25 +1,72 @@
 ---
+#############################################################################
+# Setting Up
+#############################################################################
+
 - name: Add ROS repository apt-key
   apt_key:
     url: "{{ ros_apt_key }}"
     state: present
+  become: yes
 
 - name: Add ROS repository
   apt_repository:
     repo: "deb {{ ros_apt_uri }} {{ ansible_lsb.codename }} main"
     state: present
     filename: ros-latest
+  become: yes
 
-# - name: ROS Dep Setup
+- name: RosDep Init
+  shell: "rosdep init"
+  args:
+    creates: /etc/ros/rosdep/sources.list.d/20-default.list
+  become: yes
 
-# - name: ROS Dep Update
+#############################################################################
+# Updates
+#############################################################################
+
+# In case we didn't add the ros repository in the previous step
+- name: Apt Update
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+# No way of having a reliable changed or not here unless we go to extremes
+# in checking file sizes and such
+- name: RosDep Update
+  shell: "rosdep update"
+  register: rosdep_result
+
+#############################################################################
+# Install/Upgrade
+#############################################################################
 
 - name: Install desired ROS package
   apt:
     pkg: "ros-{{ ros_release }}-{{ ros_package }}"
     state: latest
+  become: yes
 
-- name: Update existing ROS packages
+- name: Update ROS python packages
   apt:
-    pkg: ros-{{ ros_release }}-* python-wstool python-catkin-* python-bloom
-    only_upgrade: true
+    pkg: "{{ item }}"
+    only_upgrade: yes
+    state: latest
+  with_items:
+    - python-bloom
+    - python-wstool
+    - python-catkin-pkg
+  become: yes
+
+# Bastard doesn't properly return changed when nothing is installed/upgraded
+# Do our own changed_when on the result
+- name: Update all ROS-<distro> packages
+  apt:
+    pkg: ros-{{ ros_release }}-*
+    only_upgrade: yes
+    state: latest
+  become: yes
+  register: update_ros_packages_result
+  changed_when: "'0 upgraded, 0 newly installed' not in update_ros_packages_result.stdout"
