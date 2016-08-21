@@ -43,7 +43,7 @@
 # Install/Upgrade
 #############################################################################
 
-- name: Install desired ROS package
+- name: "Update package 'ros-{{ ros_release }}-{{ ros_package }}'"
   apt:
     pkg: "ros-{{ ros_release }}-{{ ros_package }}"
     state: latest
@@ -62,7 +62,7 @@
 
 # Bastard doesn't properly return changed when nothing is installed/upgraded
 # Do our own changed_when on the result
-- name: Update all ROS-<distro> packages
+- name: Update all ros-{{ ros_release }} packages
   apt:
     pkg: ros-{{ ros_release }}-*
     only_upgrade: yes
