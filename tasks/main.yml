@@ -35,9 +35,10 @@
 
 # No way of having a reliable changed or not here unless we go to extremes
 # in checking file sizes and such
-- name: RosDep Update
+- name: "Rosdep update (warning: changes undetectable)"
   shell: "rosdep update"
   register: rosdep_result
+  changed_when: False
 
 #############################################################################
 # Install/Upgrade
