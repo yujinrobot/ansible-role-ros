@@ -16,14 +16,8 @@
     filename: ros-latest
   become: yes
 
-- name: RosDep init
-  shell: "rosdep init"
-  args:
-    creates: /etc/ros/rosdep/sources.list.d/20-default.list
-  become: yes
-
 #############################################################################
-# Updates
+# Apt Update
 #############################################################################
 
 # In case we didn't add the ros repository in the previous step
@@ -33,15 +27,8 @@
     cache_valid_time: 3600
   become: yes
 
-# No way of having a reliable changed or not here unless we go to extremes
-# in checking file sizes and such
-- name: "Rosdep update (warning: changes undetectable)"
-  shell: "rosdep update"
-  register: rosdep_result
-  changed_when: False
-
 #############################################################################
-# Install/Upgrade
+# Ros Core
 #############################################################################
 
 - name: "Update package 'ros-{{ ros_release }}-{{ ros_package }}'"
@@ -49,6 +36,10 @@
     pkg: "ros-{{ ros_release }}-{{ ros_package }}"
     state: latest
   become: yes
+
+#############################################################################
+# Ros Update
+#############################################################################
 
 - name: Update ros python packages
   apt:
@@ -72,3 +63,21 @@
   become: yes
   register: update_ros_packages_result
   changed_when: "'0 upgraded, 0 newly installed' not in update_ros_packages_result.stdout"
+
+
+#############################################################################
+# Rosdep Update
+#############################################################################
+
+- name: RosDep init
+  shell: "rosdep init"
+  args:
+    creates: /etc/ros/rosdep/sources.list.d/20-default.list
+  become: yes
+
+# No way of having a reliable changed or not here unless we go to extremes
+# in checking file sizes and such
+- name: "Rosdep update (warning: changes undetectable)"
+  shell: "rosdep update"
+  register: rosdep_result
+  changed_when: False
