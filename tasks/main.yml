@@ -56,6 +56,7 @@
     only_upgrade: yes
     state: latest
   with_items:
+    - python-rosdep
     - python-bloom
     - python-wstool
     - python-catkin-pkg
