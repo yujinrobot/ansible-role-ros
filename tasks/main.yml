@@ -53,16 +53,11 @@
     - python-catkin-pkg
   become: yes
 
-# Bastard doesn't properly return changed when nothing is installed/upgraded
-# Do our own changed_when on the result
-- name: Update all ros-{{ ros_release }} packages
+- name: Upgrade all packages
   apt:
-    pkg: ros-{{ ros_release }}-*
-    only_upgrade: yes
-    state: latest
+    upgrade: yes
   become: yes
-  register: update_ros_packages_result
-  changed_when: "'0 upgraded, 0 newly installed' not in update_ros_packages_result.stdout"
+  ignore_erros: yes
 
 
 #############################################################################
