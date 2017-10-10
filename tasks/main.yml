@@ -53,6 +53,12 @@
     - python-catkin-pkg
   become: yes
 
+- name: Install aptitude
+  apt:
+    pkg: "aptitude"
+    state: latest
+  become: yes
+
 - name: Upgrade all packages
   apt:
     upgrade: yes
