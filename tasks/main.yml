@@ -67,6 +67,16 @@
 
 
 #############################################################################
+# Dirty Hotfix because of rosdep problem with packages released for Kinetic
+#############################################################################
+- name: Install basic packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+     - ros-indigo-python-watchdog
+  become: yes
+#############################################################################
 # Rosdep Update
 #############################################################################
 
