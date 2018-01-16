@@ -92,3 +92,18 @@
   shell: "rosdep update"
   register: rosdep_result
   changed_when: False
+
+#############################################################################
+# Pygraphviz packages
+#############################################################################
+- name: Install mandatory packages for pygraphviz
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - python-dev
+    - graphviz
+    - libgraphviz-dev
+    - pkg-config
+    - python-pygraphviz
+  become: yes
