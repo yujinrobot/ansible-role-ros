@@ -63,7 +63,7 @@
   apt:
     upgrade: yes
   become: yes
-  ignore_erros: yes
+  ignore_errors: yes
 
 
 #############################################################################
